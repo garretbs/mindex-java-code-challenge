@@ -1,7 +1,9 @@
 package com.mindex.challenge;
 
+import com.mindex.challenge.dao.CompensationRepository;
 import com.mindex.challenge.dao.EmployeeRepository;
 import com.mindex.challenge.dao.ReportingStructureRepository;
+import com.mindex.challenge.data.Compensation;
 import com.mindex.challenge.data.Employee;
 import com.mindex.challenge.data.ReportingStructure;
 
@@ -14,6 +16,8 @@ import static org.junit.Assert.assertEquals;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.util.Date;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class DataBootstrapTest {
@@ -23,6 +27,9 @@ public class DataBootstrapTest {
 
     @Autowired
     private ReportingStructureRepository reportingStructureRepository;
+
+    @Autowired
+    private CompensationRepository compensationRepository;
 
     @Test
     public void employeeTest() {
@@ -42,5 +49,20 @@ public class DataBootstrapTest {
         assertEquals("Lennon", reportingStructure.getEmployee().getLastName());
         assertEquals("Development Manager", reportingStructure.getEmployee().getPosition());
         assertEquals("Engineering", reportingStructure.getEmployee().getDepartment());
+    }
+
+    @Test
+    public void compensationTest() {
+        Compensation insertCompensation = new Compensation();
+        Employee employee = employeeRepository.findByEmployeeId("16a596ae-edd3-4847-99fe-c4518e82c86f");
+        insertCompensation.setEmployee(employee);
+        insertCompensation.setSalary(100000);
+        insertCompensation.setEffectiveDate(new Date(500000));
+        compensationRepository.insert(insertCompensation);
+        Compensation compensation = compensationRepository.findByEmployeeEmployeeId("16a596ae-edd3-4847-99fe-c4518e82c86f");
+        assertNotNull(compensation);
+        assertEquals(insertCompensation.getEmployee().getEmployeeId(), compensation.getEmployee().getEmployeeId());
+        assertEquals(insertCompensation.getSalary(), compensation.getSalary());
+        assertEquals(insertCompensation.getEffectiveDate(), compensation.getEffectiveDate());
     }
 }
